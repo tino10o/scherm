@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Back To 9190</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        /* Klassieke Windows 95 Styling */
+        @font-face {
+            font-family: 'W95FA';
+            src: url('https://fonts.cdnfonts.com/s/29015/W95FA.woff') format('woff');
+        }
+
+        body {
+            background-color: #008080; /* Win95 Desktop Cyaan */
+            font-family: 'W95FA', 'MS Sans Serif', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Het hoofdvenster */
+        .window {
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf;
+            padding: 2px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #ffffff, 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* De blauwe balk bovenaan */
+        .title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 3px 5px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 1px;
+        }
+
+        .title-bar-controls button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf;
+            font-weight: bold;
+            font-size: 12px;
+            width: 20px;
+            height: 18px;
+            cursor: pointer;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #ffffff;
+        }
+
+        .window-body {
+            padding: 15px;
+        }
+
+        /* Sponsor / Logo Container */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #000; /* Zwarte achtergrond laat geel/oranje knallen */
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            padding: 10px;
+        }
+
+        .logo-container img {
+            max-width: 150px; /* Geschaald voor weergave */
+            height: auto;
+            image-rendering: pixelated;
+        }
+
+        /* Formulier velden */
+        .field {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"], textarea {
+            background: #ffffff;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            padding: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            box-shadow: inset 1px 1px #000000;
+            resize: none;
+        }
+
+        input[type="file"] {
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        /* 3D Knoppen */
+        button.btn {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #000000 #000000 #dfdfdf;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: inset -1px -1px #808080, inset 1px 1px #ffffff;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button.btn:active {
+            border-color: #000000 #dfdfdf #dfdfdf #000000;
+            box-shadow: inset 1px 1px #000000;
+            padding: 9px 14px 7px 16px; /* Tekst verschuift bij indrukken */
+        }
+
+        button.btn:disabled {
+            color: #808080;
+            cursor: wait;
+        }
+
+        /* Laadscherm (Modal) */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .progress-container {
+            background: #ffffff;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            height: 20px;
+            margin-top: 15px;
+            padding: 2px;
+            display: flex;
+            gap: 2px;
+            box-shadow: inset 1px 1px #000000;
+        }
+
+        .progress-block {
+            background-color: #000080;
+            height: 100%;
+            flex: 1;
+            display: none; /* Wordt via JS zichtbaar gemaakt */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay">
+        <div class="window" style="max-width: 350px;">
+            <div class="title-bar">
+                <span>Data overdracht...</span>
+            </div>
+            <div class="window-body">
+                <p style="margin: 0 0 10px 0; font-size: 14px;">Bezig met verzenden naar server...</p>
+                <p style="margin: 0; font-size: 12px; color: #555;">Schakel uw toestel niet uit. Dit kan even duren bij het verzenden van foto's.</p>
+                <div class="progress-container" id="progressBar">
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div><div class="progress-block"></div>
+                    <div class="progress-block"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="window">
+        <div class="title-bar">
+            <span>Back_To_9190.exe</span>
+            <div class="title-bar-controls">
+                <button aria-label="Sluiten">X</button>
+            </div>
+        </div>
+        
+        <div class="window-body">
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo">
+            </div>
+
+            <form id="retroForm">
+                <div class="field">
+                    <label for="username">Naam</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+
+                <div class="field">
+                    <label for="content">Bericht</label>
+                    <textarea id="content" name="content" rows="4" required></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="file">Foto toevoegen</label>
+                    <input type="file" id="file" name="file" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">VERZENDEN</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('retroForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Voorkom herladen van de pagina
+            
+            const btn = document.getElementById('submitBtn');
+            const overlay = document.getElementById('overlay');
+            const blocks = document.querySelectorAll('.progress-block');
+            
+            // 1. Scherm blokkeren en laadbalk tonen
+            btn.disabled = true;
+            overlay.style.display = 'flex';
+            
+            // Reset laadbalk
+            blocks.forEach(b => b.style.display = 'none');
+
+            // Fake laadbalk animatie voor de visuele feedback
+            let blockIndex = 0;
+            const loadingInterval = setInterval(() => {
+                if (blockIndex < blocks.length) {
+                    blocks[blockIndex].style.display = 'block';
+                    blockIndex++;
+                } else {
+                    // Loop de animatie als de verbinding traag is
+                    blocks.forEach(b => b.style.display = 'none');
+                    blockIndex = 0;
+                }
+            }, 300);
+
+            // 2. Data verzamelen en versturen
+            try {
+                const formData = new FormData(e.target);
+                
+                // VERVANG DEZE URL DOOR JOUW CLOUDFLARE WORKER URL
+                const workerUrl = 'https://back-to-9190-screen-api.temp.10o.be/'; 
+
+                const response = await fetch(workerUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(loadingInterval); // Stop de animatie
+
+                if (response.ok) {
+                    // Zet alle blokjes vol
+                    blocks.forEach(b => b.style.display = 'block');
+                    setTimeout(() => {
+                        alert('VERZONDEN');
+                        overlay.style.display = 'none';
+                        e.target.reset();
+                    }, 500);
+                } else {
+                    throw new Error('Server Fout: ' + response.status);
+                }
+            } catch (err) {
+                clearInterval(loadingInterval);
+                alert('FOUT; slechte verbinding of NSFW!');
+                overlay.style.display = 'none';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+
+</body>
+</html>
